@@ -8,6 +8,12 @@ const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
 	index: (req, res) => {
+		const getJson = () => {
+			const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
+			const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
+			return products;
+		}
+		const products = getJson();
 		return res.render('index',{
 			productsVisited : products.filter(product => product.category === "visited"),
 			products,

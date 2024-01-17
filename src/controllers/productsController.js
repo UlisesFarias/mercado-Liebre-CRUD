@@ -10,10 +10,17 @@ const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
 	// Root - Show all products
+
 	index: (req, res) => {
+		const getJson = () => {
+			const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
+			const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
+			return products;
+		}
+		const products = getJson();
 		return res.render('products', {
 			products,
-			toThousand
+			toThousand,
 		})
 	},
 
@@ -33,8 +40,8 @@ const controller = {
 	// Create -  Method to store
 	store: (req, res) => {
 		const lastID = products[products.length - 1].id;
-		const {name,price,discount,description,category} = req.body;
-
+		const {name,price,discount,description,category,} = req.body;
+		const file = req.file
 		const newProduct = {
 			id: lastID + 1,
 			name: name.trim(),
@@ -42,7 +49,7 @@ const controller = {
 			discount: +discount,
 			category: category,
 			description: description.trim(),
-			image: "default-image.png",
+			image: file ? file.filename : "default.jpg"
 		};
 
 		products.push(newProduct);
@@ -61,7 +68,7 @@ const controller = {
 	},
 	// Update - Method to update
 	update: (req, res) => {
-		const {name,price,discount,description,category} = req.body;
+		const {name,price,discount,description,category,image} = req.body;
 
 		const productsUpdate = products.map(product =>{
 			if (product.id === +req.params.id) {
