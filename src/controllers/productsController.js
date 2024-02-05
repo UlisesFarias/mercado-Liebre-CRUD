@@ -1,3 +1,5 @@
+const db = require('../database/models')
+
 const fs = require('fs');
 const path = require('path');
 
@@ -7,21 +9,26 @@ const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 
-
 const controller = {
 	// Root - Show all products
 
 	index: (req, res) => {
-		const getJson = () => {
+		/* const getJson = () => {
 			const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
 			const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 			return products;
 		}
-		const products = getJson();
-		return res.render('products', {
-			products,
-			toThousand,
+		const products = getJson(); */
+
+		db.Product.findAll()
+		.then(products => {
+			return res.render('products', {
+				products,
+				toThousand,
+			})
 		})
+		.catch(error => console.log(error))
+		
 	},
 
 	// Detail - Detail from one product
